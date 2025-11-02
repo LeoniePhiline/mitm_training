@@ -6,6 +6,7 @@ use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 use color_eyre::{eyre::eyre, Result};
 use http::header::{CONTENT_LENGTH, HOST};
 use http::{HeaderName, HeaderValue, Response, Uri};
+use tracing::{debug, trace};
 use ureq::tls::TlsConfig;
 use ureq::unversioned::resolver::Resolver;
 use ureq::unversioned::transport::DefaultConnector;
@@ -54,7 +55,7 @@ impl Resolver for CustomResolver {
                     Some(s) if s == "https" => 443,
                     _ => 443,
                 };
-                log::trace!("static dns lookup {host} => {ip}");
+                trace!("static dns lookup {host} => {ip}");
                 res.push(SocketAddr::V4(SocketAddrV4::new(ip.to_owned(), port)));
             }
         }
@@ -114,7 +115,7 @@ impl UpstreamsManager {
 
         let response = req.version(http::Version::HTTP_11).send(request_body)?;
 
-        log::debug!("upstream status code: {}", response.status());
+        debug!("upstream status code: {}", response.status());
         Ok(response)
     }
 }

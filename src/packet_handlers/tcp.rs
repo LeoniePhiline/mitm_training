@@ -5,10 +5,10 @@ use std::collections::HashMap;
 use std::net::Ipv4Addr;
 
 use color_eyre::{eyre::bail, Result};
-use log::LevelFilter;
 use pnet::packet::tcp::{TcpFlags, TcpPacket};
 use pnet::packet::Packet;
 use rand::Rng;
+use tracing::{debug, event_enabled, trace, Level};
 
 use crate::models::{AppBuffer, ConnectionId};
 use crate::packet_handlers::echo::EchoHandler;
@@ -104,7 +104,7 @@ impl TcpHandler {
         packet: &[u8],
         options: &TcpHandlerOptions,
     ) -> Result<Option<Vec<u8>>> {
-        log::trace!("received TCP packet...");
+        trace!("received TCP packet...");
 
         let Some(inbound_tcp_packet) = TcpPacket::new(packet) else {
             bail!("cannot create tcp packet...")
@@ -123,7 +123,7 @@ impl TcpHandler {
             return Ok(None);
         }
 
-        log::debug!("Found target to intercept: {dst_ip}:{dst_port}");
+        debug!("Found target to intercept: {dst_ip}:{dst_port}");
 
         let syn_flag_set = is_tcp_flag_set(flags, TcpFlags::SYN);
         let ack_flag_set = is_tcp_flag_set(flags, TcpFlags::ACK);
@@ -131,7 +131,7 @@ impl TcpHandler {
         let fin_flag_set = is_tcp_flag_set(flags, TcpFlags::FIN);
         let rst_flag_set = is_tcp_flag_set(flags, TcpFlags::RST);
 
-        if log::log_enabled!(log::Level::Trace) && log::max_level() == LevelFilter::Trace {
+        if event_enabled!(Level::TRACE) {
             let flags = [
                 (syn_flag_set, "SYN"),
                 (ack_flag_set, "ACK"),
@@ -146,24 +146,24 @@ impl TcpHandler {
                 .collect::<Vec<_>>()
                 .join("|");
 
-            log::trace!("TCP flags: |{flags_str}|");
+            trace!("TCP flags: |{flags_str}|");
         }
 
         let connection_id = ConnectionId::new(src_ip, src_port, dst_ip, dst_port);
 
         if rst_flag_set {
-            log::trace!("received RST from {src_ip}:{src_port}");
+            trace!("received RST from {src_ip}:{src_port}");
             return self.handle_tcp_rst(&connection_id);
         }
 
         if fin_flag_set {
-            log::trace!("received FIN from {src_ip}:{src_port}");
+            trace!("received FIN from {src_ip}:{src_port}");
             return self.handle_tcp_fin(&connection_id, seq);
         }
 
         if syn_flag_set {
-            log::trace!("[+] SYN from {src_ip}:{src_port}");
-            log::trace!(
+            trace!("[+] SYN from {src_ip}:{src_port}");
+            trace!(
                 "-> SYN -> SEQ: {} - ACK {}",
                 seq,
                 inbound_tcp_packet.get_acknowledgement()
@@ -173,7 +173,7 @@ impl TcpHandler {
         }
 
         if ack_flag_set {
-            log::trace!(
+            trace!(
                 "RECV -> ACK | SEQ: {} - ACK {} - data_len={}",
                 inbound_tcp_packet.get_sequence(),
                 inbound_tcp_packet.get_acknowledgement(),
@@ -184,7 +184,7 @@ impl TcpHandler {
 
         // data is sometimes sent without a PSH...
         if psh_flag_set || !data.is_empty() {
-            log::trace!("[DATA] SEQ={} | LEN={}", seq, data.len());
+            trace!("[DATA] SEQ={} | LEN={}", seq, data.len());
             return self.handle_tcp_psh(&connection_id, seq, data);
         }
 

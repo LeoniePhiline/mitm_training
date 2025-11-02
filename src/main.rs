@@ -1,32 +1,51 @@
+use std::str::FromStr;
+
+use color_eyre::{
+    eyre::{bail, eyre, WrapErr},
+    Result,
+};
+use pnet::datalink;
+use pnet::datalink::Channel;
+use tracing::{debug, error, trace};
+use tracing_error::ErrorLayer;
+use tracing_subscriber::{
+    filter::Directive, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer,
+};
+
+use crate::constants::MITM_IFACE_NAME;
+use crate::packet_handlers::EthernetHandler;
+
 mod constants;
 mod models;
 mod packet_handlers;
 mod upstream;
 
-use color_eyre::{
-    eyre::{bail, eyre},
-    Result,
-};
-use pnet::datalink;
-use pnet::datalink::Channel;
-
-use crate::constants::MITM_IFACE_NAME;
-use crate::packet_handlers::EthernetHandler;
-
 fn main() -> Result<()> {
     color_eyre::install()?;
 
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::fmt::layer()
+                .pretty()
+                .with_thread_names(true)
+                .with_line_number(true)
+                .with_filter(
+                    EnvFilter::builder()
+                        .with_default_directive(Directive::from_str("trace")?)
+                        .from_env()?,
+                ),
+        )
+        .with(ErrorLayer::default())
+        .try_init()
+        .wrap_err("tracing initialization failed")?;
 
     let interfaces = datalink::interfaces();
     let selected_interface = interfaces
         .iter()
         .find(|iface| {
-            log::debug!(
+            debug!(
                 "available interface: {} (mac: {:?}, ips: {:?})",
-                iface.name,
-                iface.mac,
-                iface.ips,
+                iface.name, iface.mac, iface.ips,
             );
             iface.name == MITM_IFACE_NAME
         })
@@ -53,21 +72,21 @@ fn main() -> Result<()> {
     loop {
         match rx.next() {
             Ok(packet) => {
-                log::trace!("received packet");
+                trace!("Received packet.");
 
                 match ethernet.handle_packet(packet, ()) {
                     Ok(Some(packet)) => {
                         if let Some(Err(e)) =
                             tx.send_to(packet.as_slice(), Some(selected_interface.to_owned()))
                         {
-                            log::error!("error while sending packet: {e}");
+                            error!("Error while sending packet: {e}");
                         }
                     }
                     Ok(None) => {
-                        log::trace!("ignoring packet");
+                        trace!("Ignoring packet.");
                     }
-                    Err(e) => {
-                        log::error!("error while handling ethernet packet: {e}");
+                    Err(err) => {
+                        error!("Error while handling ethernet packet: {err}");
                     }
                 }
             }

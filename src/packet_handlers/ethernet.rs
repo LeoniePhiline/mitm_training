@@ -30,16 +30,16 @@ impl EthernetHandler {
     /// - Ok(None) to ignore the packet
     /// - Err on error
     pub fn handle_packet(&mut self, packet: &[u8], _options: ()) -> Result<Option<Vec<u8>>> {
+        if !self.should_intercept() {
+            return Ok(None);
+        }
+
         // TODO: Exercise 1.1
         // Implement the handling of an Ethernet packet. This should call
         // another handler's `.handle_packet()` function depending on the
         // payload type.
         // Once you have implemented the logic for handling any Ethernet packet,
         // move on to ArpHandler to perform the ARP spoofing.
-
-        if !self.should_intercept() {
-            return Ok(None);
-        }
 
         Ok(None)
     }

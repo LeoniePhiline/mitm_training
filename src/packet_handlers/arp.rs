@@ -1,8 +1,14 @@
 // TODO: remove the line below when working on the file
-#![expect(unused_variables, dead_code)]
+#![expect(dead_code)]
 
-use color_eyre::Result;
-use pnet::util::MacAddr;
+use color_eyre::{eyre::bail, Result};
+use pnet::{
+    packet::arp::{ArpOperations, ArpPacket},
+    util::MacAddr,
+};
+use tracing::{info, trace};
+
+use crate::constants::{SERVER_IP, VICTIM_IP};
 
 pub struct ArpHandler {
     own_mac_address: MacAddr,
