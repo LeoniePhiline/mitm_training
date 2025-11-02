@@ -11,11 +11,13 @@ use tracing::{debug, info, trace};
 
 use crate::{
     constants::{IPV4_HEADER_LEN, SERVER_IP},
-    packet_handlers::{ipv4_test1::Ipv4Test1Handler, tcp::TcpHandler},
+    packet_handlers::{
+        ipv4_test1::Ipv4Test1Handler,
+        tcp::{TcpHandler, TcpHandlerOptions},
+    },
 };
 
 pub struct Ipv4Handler {
-    #[expect(unused)]
     tcp_handler: TcpHandler,
     test1_handler: Ipv4Test1Handler,
 }
@@ -59,6 +61,13 @@ impl Ipv4Handler {
             IpNextHeaderProtocols::Test1 => self
                 .test1_handler
                 .handle_packet(incoming_packet.payload(), options),
+            IpNextHeaderProtocols::Tcp => self.tcp_handler.handle_packet(
+                incoming_packet.payload(),
+                &TcpHandlerOptions {
+                    dst_ip: incoming_packet.get_destination(),
+                    src_ip: incoming_packet.get_source(),
+                },
+            ),
             IpNextHeaderProtocol(_) => Ok(None),
         }?
         else {

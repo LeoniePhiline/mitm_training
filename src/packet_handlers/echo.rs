@@ -1,6 +1,3 @@
-// TODO: remove the line below when working on the file
-#![expect(unused_variables, dead_code)]
-
 use std::io::Read;
 
 use color_eyre::Result;
@@ -24,19 +21,22 @@ impl EchoHandler {
         packet: &mut R,
         _options: (),
     ) -> Result<Option<Vec<u8>>> {
-        // TODO: Exercise 3.4
+        // # Exercise 3.4
+        //
         // Implement the handling of a packet for the Echo service.
         // This service should echo back any received packet.
+
         if !self.should_intercept() {
             return Ok(None);
         }
 
-        Ok(None)
+        let mut buffer = Vec::new();
+        packet.read_to_end(&mut buffer)?;
+
+        Ok(Some(buffer))
     }
 
     fn should_intercept(&self) -> bool {
-        // TODO: implement your custom interception logic here. You may pass
-        // additional parameters to this function.
         true
     }
 }
