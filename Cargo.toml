@@ -8,7 +8,7 @@ license = "MIT"
 authors = ["thomas.halipre@synacktiv.com", "corentin.liaud@synacktiv.com"]
 
 [dependencies]
-anyhow = "1.0.100"
+color-eyre = "0.6.5"
 env_logger = "0.11.8"
 http = "1.3.1"
 httparse = "1.10.1"

@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 use std::io::Read;
 
-use anyhow::Result;
+use color_eyre::Result;
 use rustls::ServerConnection;
 
 use crate::models::ConnectionId;

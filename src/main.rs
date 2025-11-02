@@ -3,7 +3,10 @@ mod models;
 mod packet_handlers;
 mod upstream;
 
-use anyhow::{Result, anyhow, bail};
+use color_eyre::{
+    eyre::{bail, eyre},
+    Result,
+};
 use pnet::datalink;
 use pnet::datalink::Channel;
 
@@ -11,6 +14,8 @@ use crate::constants::MITM_IFACE_NAME;
 use crate::packet_handlers::EthernetHandler;
 
 fn main() -> Result<()> {
+    color_eyre::install()?;
+
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
 
     let interfaces = datalink::interfaces();
@@ -25,10 +30,10 @@ fn main() -> Result<()> {
             );
             iface.name == MITM_IFACE_NAME
         })
-        .ok_or(anyhow!("cannot find interface {MITM_IFACE_NAME}"))?;
+        .ok_or(eyre!("cannot find interface {MITM_IFACE_NAME}"))?;
     let own_mac_address = selected_interface
         .mac
-        .ok_or(anyhow!("cannot get mac address for interface"))?;
+        .ok_or(eyre!("cannot get mac address for interface"))?;
 
     let (mut tx, mut rx) = match datalink::channel(
         selected_interface,

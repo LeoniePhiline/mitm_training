@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::fmt::Write;
 use std::io::Read;
 
-use anyhow::Result;
+use color_eyre::Result;
 use http::header::{CONNECTION, CONTENT_ENCODING, CONTENT_LENGTH};
 use http::response::Parts;
 use http::{HeaderMap, HeaderValue};

@@ -4,10 +4,10 @@
 use std::collections::HashMap;
 use std::net::Ipv4Addr;
 
-use anyhow::{Result, bail};
+use color_eyre::{eyre::bail, Result};
 use log::LevelFilter;
-use pnet::packet::Packet;
 use pnet::packet::tcp::{TcpFlags, TcpPacket};
+use pnet::packet::Packet;
 use rand::Rng;
 
 use crate::models::{AppBuffer, ConnectionId};

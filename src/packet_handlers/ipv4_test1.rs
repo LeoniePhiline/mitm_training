@@ -1,7 +1,7 @@
 // TODO: remove the line below when working on the file
 #![expect(unused_variables, dead_code)]
 
-use anyhow::Result;
+use color_eyre::Result;
 
 pub struct Ipv4Test1Handler {}
 

@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 
-use anyhow::{Result, anyhow};
+use color_eyre::{eyre::eyre, Result};
 use http::header::{CONTENT_LENGTH, HOST};
 use http::{HeaderName, HeaderValue, Response, Uri};
 use ureq::tls::TlsConfig;
@@ -97,7 +97,7 @@ impl UpstreamsManager {
     ) -> Result<Response<Body>> {
         let host_header_value = headers
             .get(&HOST)
-            .ok_or(anyhow!("no host header provided..."))?;
+            .ok_or(eyre!("no host header provided..."))?;
         let uri = craft_upstream_uri(
             is_encrypted_layer,
             host_header_value.to_str()?,
@@ -107,7 +107,7 @@ impl UpstreamsManager {
         let mut req = self.agent.get(uri).force_send_body();
         let req_headers = req
             .headers_mut()
-            .ok_or(anyhow!("cannot get mutable reference on headers"))?;
+            .ok_or(eyre!("cannot get mutable reference on headers"))?;
 
         req_headers.extend(headers);
         req_headers.remove(CONTENT_LENGTH);

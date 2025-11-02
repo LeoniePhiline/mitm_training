@@ -3,7 +3,7 @@
 
 use std::io::Read;
 
-use anyhow::Result;
+use color_eyre::Result;
 
 pub struct EchoHandler {}
 
