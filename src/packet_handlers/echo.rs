@@ -1,6 +1,3 @@
-// TODO: remove the line below when working on the file
-#![expect(unused_variables, dead_code)]
-
 use std::io::Read;
 
 use anyhow::Result;
@@ -24,19 +21,17 @@ impl EchoHandler {
         packet: &mut R,
         _options: (),
     ) -> Result<Option<Vec<u8>>> {
-        // TODO: Exercise 3.4
-        // Implement the handling of a packet for the Echo service.
-        // This service should echo back any received packet.
-        if !self.should_intercept() {
-            return Ok(None);
+        log::trace!("received echo packet...");
+        let mut buffer = [0u8; 65535];
+        let mut out = Vec::new();
+
+        loop {
+            let read_amount = packet.read(&mut buffer)?;
+            if read_amount == 0 {
+                break;
+            }
+            out.extend_from_slice(&buffer[..read_amount])
         }
-
-        Ok(None)
-    }
-
-    fn should_intercept(&self) -> bool {
-        // TODO: implement your custom interception logic here. You may pass
-        // additional parameters to this function.
-        true
+        Ok(Some(out))
     }
 }

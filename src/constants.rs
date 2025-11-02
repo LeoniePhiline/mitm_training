@@ -16,7 +16,8 @@ pub const HTTP_PORT: u16 = 80;
 pub const HTTPS_PORT: u16 = 443;
 
 // Environment configuration
-// TODO: 0 - Replace the following constants with the ones from your environment
-pub const MITM_IFACE_NAME: &str = "YOUR_MITM_IFACE_NAME";
+// TODO: 0 - Replace the following constant with the ones from your environment
+pub const MITM_IFACE_NAME: &str = "virbr1";
 pub const VICTIM_IP: &str = "192.168.56.10";
 pub const SERVER_IP: &str = "192.168.56.20";
+pub const ECHO_PORT: u16 = 4000;

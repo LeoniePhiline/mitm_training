@@ -1,5 +1,3 @@
-#![allow(unused_variables, dead_code)]
-
 use std::collections::HashMap;
 use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 
