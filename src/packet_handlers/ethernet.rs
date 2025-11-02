@@ -1,9 +1,9 @@
-// TODO: remove the line below when working on the file
-#![expect(unused_variables, dead_code)]
-
-use anyhow::{Ok, Result};
+use anyhow::{Ok, Result, anyhow, bail};
+use pnet::packet::Packet;
+use pnet::packet::ethernet::{EtherTypes, EthernetPacket, MutableEthernetPacket};
 use pnet::util::MacAddr;
 
+use crate::constants::ETHERNET_HEADER_SIZE;
 use crate::packet_handlers::arp::ArpHandler;
 use crate::packet_handlers::ipv4::Ipv4Handler;
 
@@ -30,23 +30,48 @@ impl EthernetHandler {
     /// - Ok(None) to ignore the packet
     /// - Err on error
     pub fn handle_packet(&mut self, packet: &[u8], _options: ()) -> Result<Option<Vec<u8>>> {
-        // TODO: Exercise 1.1
-        // Implement the handling of an Ethernet packet. This should call
-        // another handler's `.handle_packet()` function depending on the
-        // payload type.
-        // Once you have implemented the logic for handling any Ethernet packet,
-        // move on to ArpHandler to perform the ARP spoofing.
+        log::trace!("received ETHERNET packet...");
+        let Some(inbound_ethernet_packet) = EthernetPacket::new(packet) else {
+            bail!("cannot create ethernet packet...");
+        };
 
-        if !self.should_intercept() {
+        if !self.should_intercept(&inbound_ethernet_packet.get_destination()) {
             return Ok(None);
         }
 
-        Ok(None)
+        let res = match inbound_ethernet_packet.get_ethertype() {
+            EtherTypes::Arp => self
+                .arp
+                .handle_packet(inbound_ethernet_packet.payload(), ())?,
+            EtherTypes::Ipv4 => self
+                .ipv4
+                .handle_packet(inbound_ethernet_packet.payload(), ())?,
+            e => {
+                log::trace!("unhandled ethertype {e}...");
+                return Ok(None);
+            }
+        };
+
+        match res {
+            None => Ok(None),
+            Some(payload) => {
+                let mut data = vec![0u8; ETHERNET_HEADER_SIZE + payload.len()];
+
+                // Swap MAC addresses
+                let mut outbound_ethernet_packet = MutableEthernetPacket::new(&mut data)
+                    .ok_or(anyhow!("cannot build ethernet packet"))?;
+
+                outbound_ethernet_packet.set_destination(inbound_ethernet_packet.get_source());
+                outbound_ethernet_packet.set_source(self.own_mac_address);
+                outbound_ethernet_packet.set_ethertype(inbound_ethernet_packet.get_ethertype());
+                outbound_ethernet_packet.set_payload(&payload);
+
+                Ok(Some(data))
+            }
+        }
     }
 
-    fn should_intercept(&self) -> bool {
-        // TODO: implement your custom interception logic here. You may pass
-        // additional parameters to this function.
-        true
+    fn should_intercept(&self, destination_mac_addr: &MacAddr) -> bool {
+        [self.own_mac_address, MacAddr::broadcast(), MacAddr::zero()].contains(destination_mac_addr)
     }
 }
