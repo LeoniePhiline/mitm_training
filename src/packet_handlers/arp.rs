@@ -1,6 +1,6 @@
 use color_eyre::{
-    eyre::{bail, OptionExt},
     Result,
+    eyre::{OptionExt, bail},
 };
 use pnet::{
     packet::arp::{Arp, ArpOperations, ArpPacket, MutableArpPacket},

@@ -1,19 +1,20 @@
 // TODO: remove the line below when working on the file
 #![expect(unused_variables, dead_code)]
 
-use std::collections::HashMap;
-use std::net::Ipv4Addr;
+use std::{collections::HashMap, net::Ipv4Addr};
 
-use color_eyre::{eyre::bail, Result};
-use pnet::packet::tcp::{TcpFlags, TcpPacket};
-use pnet::packet::Packet;
+use color_eyre::{Result, eyre::bail};
+use pnet::packet::{
+    Packet,
+    tcp::{TcpFlags, TcpPacket},
+};
 use rand::Rng;
-use tracing::{debug, event_enabled, trace, Level};
+use tracing::{Level, debug, event_enabled, trace};
 
-use crate::models::{AppBuffer, ConnectionId};
-use crate::packet_handlers::echo::EchoHandler;
-use crate::packet_handlers::http::HttpHandler;
-use crate::packet_handlers::tls::TlsHandler;
+use crate::{
+    models::{AppBuffer, ConnectionId},
+    packet_handlers::{echo::EchoHandler, http::HttpHandler, tls::TlsHandler},
+};
 
 /// Represent the initial state of a TCP connection
 #[derive(Clone, Debug, PartialEq)]
@@ -94,7 +95,7 @@ impl TcpHandler {
 
     /// Handle a raw TCP packet.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// - Ok(Vec<u8>) to send a reponse
     /// - Ok(None) to ignore the packet

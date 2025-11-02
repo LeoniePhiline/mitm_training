@@ -14,7 +14,7 @@ impl EchoHandler {
 
     /// Handle a raw packet of the echo service.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// - Ok(Vec<u8>) to send a reponse
     /// - Ok(None) to ignore the packet

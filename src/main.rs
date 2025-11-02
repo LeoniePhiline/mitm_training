@@ -1,19 +1,17 @@
 use std::str::FromStr;
 
 use color_eyre::{
-    eyre::{bail, eyre, WrapErr},
     Result,
+    eyre::{WrapErr, bail, eyre},
 };
-use pnet::datalink;
-use pnet::datalink::Channel;
+use pnet::datalink::{self, Channel};
 use tracing::{debug, error, trace};
 use tracing_error::ErrorLayer;
 use tracing_subscriber::{
-    filter::Directive, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Layer,
+    EnvFilter, Layer, filter::Directive, layer::SubscriberExt, util::SubscriberInitExt,
 };
 
-use crate::constants::MITM_IFACE_NAME;
-use crate::packet_handlers::EthernetHandler;
+use crate::{constants::MITM_IFACE_NAME, packet_handlers::EthernetHandler};
 
 mod constants;
 mod models;

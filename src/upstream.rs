@@ -1,16 +1,21 @@
 #![allow(unused_variables, dead_code)]
 
-use std::collections::HashMap;
-use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
+use std::{
+    collections::HashMap,
+    net::{Ipv4Addr, SocketAddr, SocketAddrV4},
+};
 
-use color_eyre::{eyre::eyre, Result};
-use http::header::{CONTENT_LENGTH, HOST};
-use http::{HeaderName, HeaderValue, Response, Uri};
+use color_eyre::{Result, eyre::eyre};
+use http::{
+    HeaderName, HeaderValue, Response, Uri,
+    header::{CONTENT_LENGTH, HOST},
+};
 use tracing::{debug, trace};
-use ureq::tls::TlsConfig;
-use ureq::unversioned::resolver::Resolver;
-use ureq::unversioned::transport::DefaultConnector;
-use ureq::{Agent, Body};
+use ureq::{
+    Agent, Body,
+    tls::TlsConfig,
+    unversioned::{resolver::Resolver, transport::DefaultConnector},
+};
 
 fn craft_upstream_uri(
     is_encrypted_layer: bool,

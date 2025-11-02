@@ -1,18 +1,17 @@
 use color_eyre::{
-    eyre::{Ok, OptionExt},
     Result,
+    eyre::{Ok, OptionExt},
 };
 use pnet::{
     packet::{
-        ethernet::{EtherTypes, Ethernet, EthernetPacket, MutableEthernetPacket},
         Packet,
+        ethernet::{EtherTypes, Ethernet, EthernetPacket, MutableEthernetPacket},
     },
     util::MacAddr,
 };
 use tracing::{debug, warn};
 
-use crate::packet_handlers::arp::ArpHandler;
-use crate::packet_handlers::ipv4::Ipv4Handler;
+use crate::packet_handlers::{arp::ArpHandler, ipv4::Ipv4Handler};
 
 pub struct EthernetHandler {
     arp: ArpHandler,

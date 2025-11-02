@@ -1,10 +1,20 @@
-// TODO: remove the line below when working on the file
-#![expect(unused_variables, dead_code)]
+use color_eyre::{
+    Result,
+    eyre::{Context, OptionExt, bail},
+};
+use pnet::packet::{
+    ip::{IpNextHeaderProtocol, IpNextHeaderProtocols},
+    ipv4::{Ipv4, Ipv4Flags, Ipv4Packet, MutableIpv4Packet, checksum},
+};
+use tracing::{debug, info, trace};
 
-use color_eyre::Result;
-
-use crate::packet_handlers::ipv4_test1::Ipv4Test1Handler;
-use crate::packet_handlers::tcp::TcpHandler;
+use crate::{
+    constants::{IPV4_HEADER_LEN, SERVER_IP},
+    packet_handlers::{
+        ipv4_test1::Ipv4Test1Handler,
+        tcp::{TcpHandler, TcpHandlerOptions},
+    },
+};
 
 pub struct Ipv4Handler {
     tcp_handler: TcpHandler,

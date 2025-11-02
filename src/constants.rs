@@ -2,10 +2,7 @@
 
 use std::net::Ipv4Addr;
 
-use pnet::packet::arp::ArpPacket;
-use pnet::packet::ethernet::EthernetPacket;
-use pnet::packet::ipv4::Ipv4Packet;
-use pnet::packet::tcp::TcpPacket;
+use pnet::packet::{arp::ArpPacket, ethernet::EthernetPacket, ipv4::Ipv4Packet, tcp::TcpPacket};
 
 // Packet sizes
 pub const ETHERNET_HEADER_SIZE: usize = EthernetPacket::minimum_packet_size();

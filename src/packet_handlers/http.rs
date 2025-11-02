@@ -1,14 +1,14 @@
 // TODO: remove the line below when working on the file
 #![expect(unused_variables, dead_code)]
 
-use std::collections::HashMap;
-use std::fmt::Write;
-use std::io::Read;
+use std::{collections::HashMap, fmt::Write, io::Read};
 
 use color_eyre::Result;
-use http::header::{CONNECTION, CONTENT_ENCODING, CONTENT_LENGTH};
-use http::response::Parts;
-use http::{HeaderMap, HeaderValue};
+use http::{
+    HeaderMap, HeaderValue,
+    header::{CONNECTION, CONTENT_ENCODING, CONTENT_LENGTH},
+    response::Parts,
+};
 
 use crate::models::ConnectionId;
 
@@ -63,7 +63,7 @@ impl HttpHandler {
 
     /// Handle new data for incoming http requests.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// - Ok(Vec<u8>) to send a reponse
     /// - Ok(None) to ignore the packet

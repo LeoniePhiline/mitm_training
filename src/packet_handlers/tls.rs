@@ -1,14 +1,12 @@
 // TODO: remove the line below when working on the file
 #![expect(unused_variables, dead_code)]
 
-use std::collections::HashMap;
-use std::io::Read;
+use std::{collections::HashMap, io::Read};
 
 use color_eyre::Result;
 use rustls::ServerConnection;
 
-use crate::models::ConnectionId;
-use crate::packet_handlers::http::HttpHandler;
+use crate::{models::ConnectionId, packet_handlers::http::HttpHandler};
 
 pub struct TlsHandlerOptions {
     pub conn_id: ConnectionId,
@@ -29,7 +27,7 @@ impl TlsHandler {
 
     /// Handle new data for incoming tls packet.
     ///
-    /// ## Returns
+    /// # Returns
     ///
     /// - Ok(Vec<u8>) to send a reponse
     /// - Ok(None) to ignore the packet

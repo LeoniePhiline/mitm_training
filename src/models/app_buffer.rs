@@ -1,5 +1,4 @@
-use std::collections::BTreeMap;
-use std::io::Read;
+use std::{collections::BTreeMap, io::Read};
 
 /// A buffer that reassembles incoming data chunks in order based on sequence numbers.
 /// Similar to how TCP reassembles out-of-order packets.
