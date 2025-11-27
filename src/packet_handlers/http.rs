@@ -5,9 +5,9 @@ use std::{collections::HashMap, fmt::Write, io::Read};
 
 use color_eyre::Result;
 use http::{
-    HeaderMap, HeaderValue,
     header::{CONNECTION, CONTENT_ENCODING, CONTENT_LENGTH},
     response::Parts,
+    HeaderMap, HeaderValue,
 };
 
 use crate::models::ConnectionId;
@@ -45,9 +45,9 @@ fn format_headers(headers: &mut HeaderMap, body_len: usize, output: &mut String)
     Ok(())
 }
 
-pub struct HttpHandlerOptions {
+pub struct HttpHandlerOptions<'a> {
     pub is_underlying_layer_encrypted: bool,
-    pub conn_id: ConnectionId,
+    pub connection_id: &'a ConnectionId,
 }
 
 pub struct HttpHandler {
@@ -71,27 +71,33 @@ impl HttpHandler {
     pub fn handle_packet<R: Read>(
         &mut self,
         packet: &mut R,
-        options: &HttpHandlerOptions,
+        options: &HttpHandlerOptions<'_>,
     ) -> Result<Option<Vec<u8>>> {
         // TODO: Exercise 4.1
+        //
         // Implement the handling of an HTTP request. This will be the last
         // handler of this training.
-        // The first part of this exercice is to forward the incomming request
+        //
+        // The first part of this exercise is to forward the incoming request
         // to the legitimate server.
-        // For this, we recommend using httparse and ureq. You can also make use
-        // of the provided crate::upstream::UpstreamsManager to handle the call
-        // to the legitimate server with ureq. This struct includes a custom
+        //
+        // For this, we recommend using `httparse` and `ureq`. You can also make use
+        // of the provided `crate::upstream::UpstreamsManager` to handle the call
+        // to the legitimate server with `ureq`. This struct includes a custom
         // resolver that will help you handle the domain requested by the
         // client.
+        //
         // Note: you are now given a reader instead of the raw packet data.
         // Once correctly implemented, you should pass test case #5.
 
         // TODO: Exercice 4.2
         // The goal of this exercise is to embed a malicous payload in the web
         // page returned to the victim. The payload will be in the form of an
-        // embedded <script> section.
-        // to the victim the expected web page, but with a malicious payload
-        // included in the form of an embedded <script> section.
+        // embedded `<script>` section.
+        //
+        // Send the victim the expected web page, but with a malicious payload
+        // included in the form of an embedded `<script>` section.
+        //
         // You will need to parse and send an HTTP request.
         // Once correctly implemented, you should pass test case #7 for http.
 

@@ -14,7 +14,11 @@ use tracing::{debug, event_enabled, info, trace, warn, Level};
 use crate::{
     constants::{SERVER_IP, TCP_HEADER_LEN},
     models::{AppBuffer, ConnectionId},
-    packet_handlers::{echo::EchoHandler, http::HttpHandler, tls::TlsHandler},
+    packet_handlers::{
+        echo::EchoHandler,
+        http::{HttpHandler, HttpHandlerOptions},
+        tls::TlsHandler,
+    },
 };
 
 /// Represent the initial state of a TCP connection
@@ -123,7 +127,6 @@ fn craft_tcp_packet(
 pub struct TcpHandler {
     // K = (ip_src, port_src, ip_dst, port_dst) / V = Actual connection information
     active_connections: HashMap<ConnectionId, TcpConnectionInfo>,
-    #[expect(unused)]
     http: HttpHandler,
     #[expect(unused)]
     tls: TlsHandler,
@@ -431,6 +434,13 @@ impl TcpHandler {
 
         let payload = match connection_id.dst_port() {
             4000 => self.echo.handle_packet(&mut connection.buffer, ()),
+            80 => {
+                let options = HttpHandlerOptions {
+                    is_underlying_layer_encrypted: false,
+                    connection_id,
+                };
+                self.http.handle_packet(&mut connection.buffer, &options)
+            }
             _ => Ok(None),
         }?;
 
