@@ -307,7 +307,7 @@ this is expected as you have not started coding the MitM program.
 
 - macOS 10.15+ aarch64.
 - A Rust development environment with Rust at least version 1.85.1.
-- UTM (tested on v4.6.5).
+- UTM (tested on v4.6.5). [Download UTM](https://mac.getutm.app/)
 
 Download the two virtualization images from <http://152.53.22.37/workshop/>.
 
@@ -323,10 +323,6 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
     to the repository once we have invited you to the GitHub organisation. 
     All commands running on your host assume that it is the current working
     directory.
-
-#### Download and installation of UTM
-
-Here you can [download](git@github.com:el0i404/mitm_training.git) UTM for the VM
 
 #### Setting up the lab
 
