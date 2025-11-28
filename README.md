@@ -96,7 +96,9 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
                 <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
             </interface>
             ```
-    11. Click "Begin Installation" and the VM should start.
+    11. Go to _Overview > Details_ in the _Hypervisor Details_ and select "BIOS" in the _Firmware_ field. (The partition
+        scheme is MBR for broader compatibility, there is no UEFI option)
+    12. Click "Begin Installation" and the VM should start.
 6. Setup client. Select 'QEMU/KVM' then go to File > New Virtual Machine.
     1. Import existing disk image.
     2. Browse > default > select `rust-mitm-client.qcow2` > Choose Volume.
@@ -118,7 +120,8 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
                 <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
             </interface>
             ```
-    11. Click "Begin Installation" and the VM should start.
+    11. Go to _Overview > Details_ in the _Hypervisor Details_ and select "BIOS" in the _Firmware_ field.
+    12. Click "Begin Installation" and the VM should start.
 
 #### Running the lab
 
@@ -185,7 +188,7 @@ MitM program.
 - Npcap installed: https://npcap.com/#download (tested with version 1.83)
 - Npcap SDK: https://npcap.com/#download  (tested with SDK version 1.15).
   Extract `/Lib/x64/Packet.lib` at the root of the Rust project.
-- (Optional): a SSH client to connect to the VM more easily (see 
+- (Optional): a SSH client to connect to the VM more easily (see
   <https://learn.microsoft.com/en-us/windows/terminal/tutorials/ssh>)
 
 Download the two virtualization images from <http://152.53.22.37/workshop/>.
@@ -207,7 +210,7 @@ Open a command prompt as **Administrator**
     ```
 2. Pull the GitHub repository. The repository is available at
     <https://github.com/LeoniePhiline/mitm_training>. You will have access
-    to the repository once we have invited you to the GitHub organisation. 
+    to the repository once we have invited you to the GitHub organisation.
     All commands running on your host assume that it is the current working
     directory.
 
@@ -320,7 +323,7 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
 
 1. Pull the GitHub repository. The repository is available at
     <https://github.com/LeoniePhiline/mitm_training>. You will have access
-    to the repository once we have invited you to the GitHub organisation. 
+    to the repository once we have invited you to the GitHub organisation.
     All commands running on your host assume that it is the current working
     directory.
 
