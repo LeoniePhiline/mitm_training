@@ -95,8 +95,6 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
                 <model type="virtio"/>
                 <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>
             </interface>
-
-
             ```
     11. Go to _Overview > Details_ in the _Hypervisor Details_ and select "BIOS" in the _Firmware_ field. (The partition
         scheme is MBR for broader compatibility, there is no UEFI option)
