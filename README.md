@@ -324,6 +324,10 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
     All commands running on your host assume that it is the current working
     directory.
 
+#### Download and installation of UTM
+
+Here you can [download](git@github.com:el0i404/mitm_training.git) UTM for the VM
+
 #### Setting up the lab
 
 1. Extract both VM files.
