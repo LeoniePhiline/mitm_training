@@ -65,27 +65,27 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
 #### Setting up the lab
 
 1. Copy the two files `rust-mitm-client.qcow2` and `rust-mitm-server.qcow2` to `/var/lib/libvirt/images`
-  (use sudo of copy as root if you have any permission issues).
+    (use sudo of copy as root if you have any permission issues).
 2. Start `virt-manager`.
-3. Go to Edit > Preferences > General and Enable XML editing.
-4. Setup network. Select 'QEMU/KVM' then go to Edit > Connection Details > Virtual Networks > `+`.
-    1. Name: `rust-mitm`.
-    2. Mode: Isolated.
-    3. IPv4 Configuration.
-        1. Network `192.168.56.0/24`.
-        2. Disable DHCPv4.
-        3. Finish.
-5. Setup server. Select 'QEMU/KVM' then go to File > New Virtual Machine.
+3. Go to _Edit > Preferences > General_ and _Enable XML editing_.
+4. Setup network. Select _QEMU/KVM_ then go to _Edit > Connection Details > Virtual Networks > `+`_.
+    1. _Name:_ `rust-mitm`.
+    2. _Mode:_ Isolated.
+    3. _IPv4 Configuration_:
+        1. _Network_ `192.168.56.0/24`.
+        2. _Disable DHCPv4_.
+        3. _Finish_.
+5. Setup server: Select _QEMU/KVM_ then go to _File > New Virtual Machine_.
     1. Import existing disk image.
-    2. Browse > default > select `rust-mitm-server.qcow2` > Choose Volume.
-    3. Operating system: Debian 11 or Debian 12 (it does not matter).
-    4. Memory: 2048MiB.
-    5. CPUs: 2.
-    6. Name: `rust-mitm-server`.
-    7. Select Customize configuration before installation.
-    8. Network selection: Virtual network `rust-mitm`.
-    9. Finish.
-    10. Go to NIC > XML.
+    2. _Browse > default >_ select `rust-mitm-server.qcow2` _> Choose Volume_.
+    3. Operating system: _Debian 11_ or _Debian 12_ (it does not matter).
+    4. _Memory:_ 2048MiB.
+    5. _CPUs:_ 2.
+    6. _Name:_ `rust-mitm-server`.
+    7. Select _Customize configuration before installation_.
+    8. _Network selection: Virtual network `rust-mitm`_.
+    9. _Finish_.
+    10. Go to _NIC > XML_.
         1. Replace the existing MAC address with `08:00:27:f3:4d:aa`.
         2. Apply. The XML configuration should look like this:
             ```xml
@@ -98,18 +98,18 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
             ```
     11. Go to _Overview > Details_ in the _Hypervisor Details_ and select "BIOS" in the _Firmware_ field. (The partition
         scheme is MBR for broader compatibility, there is no UEFI option)
-    12. Click "Begin Installation" and the VM should start.
-6. Setup client. Select 'QEMU/KVM' then go to File > New Virtual Machine.
+    12. Click _Begin Installation_ and the VM should start.
+6. Setup client: Select _QEMU/KVM_ then go to _File > New Virtual Machine_.
     1. Import existing disk image.
-    2. Browse > default > select `rust-mitm-client.qcow2` > Choose Volume.
-    3. Operating system: Debian 11 or Debian 12 (it does not matter).
-    4. Memory: 2048MiB.
-    5. CPUs: 2.
-    6. Name: `rust-mitm-client`.
-    7. Select Customize configuration before installation.
-    8. Network selection: Virtual network `rust-mitm`.
-    9. Finish.
-    10. Go to NIC > XML.
+    2. _Browse > default >_ select `rust-mitm-client.qcow2` _> Choose Volume_.
+    3. _Operating system:_ _Debian 11_ or _Debian 12_ (it does not matter).
+    4. _Memory:_ 2048MiB.
+    5. _CPUs:_ 2.
+    6. _Name:_ `rust-mitm-client`.
+    7. Select _Customize configuration before installation_.
+    8. _Network selection: Virtual network `rust-mitm`_.
+    9. _Finish_.
+    10. Go to _NIC > XML_.
         1. Replace the existing MAC address with `08:00:27:1f:1b:f3`.
         2. Apply. The XML configuration should look like this:
             ```xml
@@ -121,7 +121,7 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
             </interface>
             ```
     11. Go to _Overview > Details_ in the _Hypervisor Details_ and select "BIOS" in the _Firmware_ field.
-    12. Click "Begin Installation" and the VM should start.
+    12. Click _Begin Installation_ and the VM should start.
 
 #### Running the lab
 
@@ -146,10 +146,10 @@ On your _host machine_
     bridge (e.g., `virbr1`). You will need it for the next part.
     ```bash
     ...
-4: virbr1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
-    link/ether 52:54:00:5e:34:87 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.56.1/24 brd 192.168.56.255 scope global virbr1
-       valid_lft forever preferred_lft foreve
+    4: virbr1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+        link/ether 52:54:00:5e:34:87 brd ff:ff:ff:ff:ff:ff
+        inet 192.168.56.1/24 brd 192.168.56.255 scope global virbr1
+           valid_lft forever preferred_lft foreve
     ...
     ```
 
@@ -164,11 +164,11 @@ On the _rust-mitm-client_ VM
 3. Open `/home/user/config.json` and update the `mitm_mac_address` field with
     the MAC address of the bridge on your host that you wrote down from the
     previous part.
-    ```json
+    ```jsonc
     {
-        ...
+        // ...
         "mitm_mac_address": "52:54:00:5e:34:87"
-        ...
+        // ...
     }
     ```
 
@@ -209,38 +209,38 @@ Open a command prompt as **Administrator**
     arp -s 192.168.56.20 08-00-27-f3-4d-aa 192.168.56.1
     ```
 2. Pull the GitHub repository. The repository is available at
-    <https://github.com/LeoniePhiline/mitm_training>. You will have access
-    to the repository once we have invited you to the GitHub organisation.
+    <https://github.com/LeoniePhiline/mitm_training>.
+    You have been invited to the repository for read access.
     All commands running on your host assume that it is the current working
     directory.
 
 #### Setting up the lab
 
 1. Start VirtualBox.
-2. Go to network tab > Host-only Networks > Create (if the network does not exist).
-    1. IPv4 Address: `192.168.56.1`.
-    2. IPv4 Network Mask: `255.255.255.0`.
-    3. DHCP Server: disabled.
-3. Setup server.
-    1. File > Import Appliance...
+2. Go to _Network_ tab _> Host-only Networks > Create_ (if the network does not exist).
+    1. _IPv4 Address:_ `192.168.56.1`.
+    2. _IPv4 Network Mask:_ `255.255.255.0`.
+    3. _DHCP Server:_ _disabled_.
+3. Setup server:
+    1. _File > Import Appliance..._
     2. Select `rust-mitm-server.ova`.
-    3. Settings > Generate new MAC addresses for all network adapters.
-    4. Finish.
-    5. Right-click the VM > Settings > Network (some config may already be correct).
-        1. Enable Adapter 1.
-        2. Attached to `Host-only Adapter`.
-        3. Name `VirtualBox Host-Only Ethernet Adapter` (the network created in step 2.).
-        4. **MAC Address** `080027F34DAA`.
-4. Setup client.
-    1. File > Import Appliance...
+    3. _Settings > Generate new MAC addresses for all network adapters_.
+    4. _Finish_.
+    5. Right-click the _VM > Settings > Network_ (some config may already be correct).
+        1. Enable _Adapter 1_.
+        2. _Attached to `Host-only Adapter`_.
+        3. (Name `VirtualBox Host-Only Ethernet Adapter`) (the network created in step 2.).
+        4. _**MAC Address** `080027F34DAA`_.
+4. Setup client:
+    1. _File > Import Appliance..._
     2. Select `rust-mitm-client.ova`.
-    3. Settings > Generate new MAC addresses for all network adapters.
-    4. Finish.
-    5. Right-click VM > Settings > Network (some config may already be correct).
-        1. Enable Adapter 1.
-        2. Attached to `Host-only Adapter`.
-        3. Name `VirtualBox Host-Only Ethernet Adapter` (the network created in step 2.).
-        4. **MAC Address** `0800271F1BF3`.
+    3. _Settings > Generate new MAC addresses for all network adapters_.
+    4. _Finish_.
+    5. Right-click _VM > Settings > Network_ (some config may already be correct).
+        1. Enable _Adapter 1_.
+        2. _Attached to `Host-only Adapter`_.
+        3. _Name `VirtualBox Host-Only Ethernet Adapter`_ (the network created in step 2.).
+        4. _**MAC Address** `0800271F1BF3`_.
 
 #### Running the lab
 
@@ -292,11 +292,11 @@ On the _rust-mitm-client_ VM
 3. Open `/home/user/config.json` and update the `mitm_mac_address` field with
     the MAC address of the bridge on your host that you wrote down from the
     previous part (replace the dashes `-` with colons `:`).
-    ```json
+    ```jsonc
     {
-        ...
+        // ...
         "mitm_mac_address": "0A:00:27:00:00:33"
-        ...
+        // ...
     }
     ```
 
@@ -310,7 +310,7 @@ this is expected as you have not started coding the MitM program.
 
 - macOS 10.15+ aarch64.
 - A Rust development environment with Rust at least version 1.85.1.
-- UTM (tested on v4.6.5). [Download UTM](https://mac.getutm.app/)
+- [UTM](https://mac.getutm.app/) (tested on v4.6.5).
 
 Download the two virtualization images from <http://152.53.22.37/workshop/>.
 
@@ -322,8 +322,8 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
 #### Setting up your host environment
 
 1. Pull the GitHub repository. The repository is available at
-    <https://github.com/LeoniePhiline/mitm_training>. You will have access
-    to the repository once we have invited you to the GitHub organisation.
+    <https://github.com/LeoniePhiline/mitm_training>.
+    You have been invited to the repository for read access.
     All commands running on your host assume that it is the current working
     directory.
 
@@ -334,8 +334,8 @@ Download the two virtualization images from <http://152.53.22.37/workshop/>.
     tar -xvf rust-mitm-client-arm64.utm.tgz
     tar -xvf rust-mitm-server-arm64.utm.tgz
     ```
-2. Import the server VMs in UTM: File > New > Open and select the rust-mitm-server.utm folder.
-3. Import the client VMs in UTM: File > New > Open and select the rust-mitm-server.utm folder.
+2. Import the server VMs in UTM: _File > New > Open_ and select the `rust-mitm-server.utm` folder.
+3. Import the client VMs in UTM: _File > New > Open_ and select the `rust-mitm-server.utm` folder.
 
 #### Running the lab
 
@@ -384,11 +384,11 @@ On the _rust-mitm-client_ VM
 3. Open `/home/user/config.json` and update the `mitm_mac_address` field with
     the MAC address of the bridge on your host that you wrote down from the
     previous part.
-    ```json
+    ```jsonc
     {
-        ...
+        // ...
         "mitm_mac_address": "1a:4a:53:01:37:64"
-        ...
+        // ...
     }
     ```
 
@@ -399,9 +399,9 @@ program.
 
 ### Lab setup checklist
 
-- [ ] Building the attacker binary on the host
+- [ ] Building the attacker binary on the host.
   - `cargo build`
-- [ ] Running the attacker binary on the host
+- [ ] Running the attacker binary on the host.
   - **Linux**: `sudo target/debug/mitm_training`
   - **Windows**: `cargo run`
   - **macOS**: `sudo target/debug/mitm_training`
@@ -461,8 +461,8 @@ program.
     ...
     ```
 - [ ] Check the network configuration on the server with `ip a` command.
-  - [ ] must match `inet 192.168.56.20/24`
-  - [ ] must match `link/ether 08:00:27:f3:4d:aa`
+  - [ ] Must match `inet 192.168.56.20/24`.
+  - [ ] Must match `link/ether 08:00:27:f3:4d:aa`.
     ```bash
     $ ip a
     ...
@@ -475,8 +475,8 @@ program.
     ...
     ```
 - [ ] Check the network configuration on the client with `ip a` command.
-  - [ ] must match `inet 192.168.56.10/24`
-  - [ ] must match `link/ether 08:00:27:1f:1b:f3`
+  - [ ] Must match `inet 192.168.56.10/24`.
+  - [ ] Must match `link/ether 08:00:27:1f:1b:f3`.
     ```bash
     $ ip a
     ...
@@ -488,22 +488,22 @@ program.
             valid_lft forever preferred_lft forever
     ...
     ```
-- [ ] Check the connectivity between the server and your host
+- [ ] Check the connectivity between the server and your host.
   ```bash
   # on your host
   ping 192.168.56.20
   ```
-- [ ] Check the connectivity between the client and your host
+- [ ] Check the connectivity between the client and your host.
   ```bash
   # on your host
   ping 192.168.56.10
   ```
-- [ ] Check the connectivity between the client and the server
+- [ ] Check the connectivity between the client and the server.
   ```bash
   # on the client
   ping 192.168.56.20
   ```
-- [ ] Check that the HTTP server is running and accessible from the client
+- [ ] Check that the HTTP server is running and accessible from the client.
   ```bash
   # on the client
   wget http://192.168.56.20/bytes/128
